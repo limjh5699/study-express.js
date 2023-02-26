@@ -1,19 +1,19 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
-@Entity()
-export class board {
-  @PrimaryGeneratedColumn()
+@Entity("board")
+export class Post {
+  @PrimaryGeneratedColumn("uuid")
   no: number;
 
-  @Column()
+  @Column({ type: "varchar", length: "20", nullable: false })
   title: string;
 
-  @Column()
+  @Column({ type: "text", length: "3000", nullable: false })
   detail: string;
 
-  @Column()
+  @Column({ type: "varchar", length: "20", nullable: false })
   nickname: number;
 
-  @Column()
+  @Column({ type: "varchar", length: "20", nullable: false })
   password: string;
 }
