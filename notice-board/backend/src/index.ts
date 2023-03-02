@@ -1,9 +1,16 @@
 import express from "express";
 import bodyParser from "body-parser";
 import knex from "./database";
+import cors from "cors";
 
 const app = express();
 
+const corsConfig = {
+  origin: "http://localhost:3000",
+  credentials: true,
+};
+
+app.use(cors(corsConfig));
 app.use(express.urlencoded({ extended: false }));
 
 app.get("/api/posts", (req, res) => {

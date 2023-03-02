@@ -1,6 +1,16 @@
 import styled from "styled-components";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 
 const List = () => {
+  const [lists, setLists] = useState<any>([]);
+
+  useEffect(() => {
+    fetch("http://localhost:3001/api/posts")
+      .then((res) => res.json())
+      .then((res) => setLists(res));
+  }, []);
+
   return (
     <Table>
       <thead>
@@ -17,17 +27,21 @@ const List = () => {
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <BodyNo>
-            <BodyFont>1</BodyFont>
-          </BodyNo>
-          <BodyName>
-            <BodyFont>김</BodyFont>
-          </BodyName>
-          <BodyNickName>
-            <BodyFont>임</BodyFont>
-          </BodyNickName>
-        </tr>
+        {lists.map((list: any, idx: number) => (
+          <tr key={idx}>
+            <BodyNo>
+              <BodyFont>
+                <Link href={"/" + parseInt(list.no)}>{list.no}</Link>
+              </BodyFont>
+            </BodyNo>
+            <BodyName>
+              <BodyFont>{list.title}</BodyFont>
+            </BodyName>
+            <BodyNickName>
+              <BodyFont>{list.nickname}</BodyFont>
+            </BodyNickName>
+          </tr>
+        ))}
       </tbody>
     </Table>
   );

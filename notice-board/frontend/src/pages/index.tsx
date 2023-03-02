@@ -1,11 +1,13 @@
 import styled from "styled-components";
-import List from "@/components/notice-list/list";
+import List from "@/components/main/list";
+import Writing from "@/components/main/view";
 
 const Main = () => {
   return (
     <Layout>
       <Size>
         <List />
+        {/* <Writing /> */}
       </Size>
     </Layout>
   );
