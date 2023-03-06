@@ -10,6 +10,7 @@ const corsConfig = {
   credentials: true,
 };
 
+app.use(express.json());
 app.use(cors(corsConfig));
 app.use(express.urlencoded({ extended: false }));
 
@@ -44,16 +45,33 @@ app.post("/api/create", (req, res) => {
         password: req.body.password,
       },
     ])
-    .then(() => res.send("success"));
+    .then(() => res.status(200).send({ message: "success" }));
+});
+
+app.post("/api/checkPassword", (req, res) => {
+  knex("board")
+    .select("password")
+    .where("no", req.body.id)
+    .then((data: any) => {
+      if (data[0].password === req.body.password) {
+        res.status(200).send({ message: "success" });
+      } else {
+        res.status(500).send({ message: "failed" });
+      }
+    });
 });
 
 app.patch("/api/posts/:id", (req, res) => {
   const id = req.params.id;
 
   knex("board")
-    .update({ detail: req.body.detail })
-    .where("no", id)
-    .then(() => res.send("success"));
+    .update({
+      title: req.body.title,
+      detail: req.body.detail,
+      nickname: req.body.nickname,
+    })
+    .where("no", req.body.id)
+    .then(() => res.status(200).send({ message: "success" }));
 });
 
 app.delete("/api/posts/:id", (req, res) => {
@@ -62,7 +80,7 @@ app.delete("/api/posts/:id", (req, res) => {
   knex("board")
     .del()
     .where("no", id)
-    .then(() => res.send("success"));
+    .then(() => res.status(200).send({ message: "success" }));
 });
 
 app.listen(3001, () => {
