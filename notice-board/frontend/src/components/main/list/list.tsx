@@ -12,38 +12,49 @@ const List = () => {
   }, []);
 
   return (
-    <Table>
-      <thead>
-        <tr>
-          <HeadNo>
-            <HeadFont>No</HeadFont>
-          </HeadNo>
-          <HeadName>
-            <HeadFont>제목</HeadFont>
-          </HeadName>
-          <HeadNickName>
-            <HeadFont>닉네임</HeadFont>
-          </HeadNickName>
-        </tr>
-      </thead>
-      <tbody>
-        {lists.map((list: any, idx: number) => (
-          <tr key={idx}>
-            <BodyNo>
-              <BodyFont>
-                <Link href={"/" + parseInt(list.no)}>{list.no}</Link>
-              </BodyFont>
-            </BodyNo>
-            <BodyName>
-              <BodyFont>{list.title}</BodyFont>
-            </BodyName>
-            <BodyNickName>
-              <BodyFont>{list.nickname}</BodyFont>
-            </BodyNickName>
+    <div>
+      <Table>
+        <thead>
+          <tr>
+            <HeadNo>
+              <HeadFont>No</HeadFont>
+            </HeadNo>
+            <HeadName>
+              <HeadFont>제목</HeadFont>
+            </HeadName>
+            <HeadNickName>
+              <HeadFont>닉네임</HeadFont>
+            </HeadNickName>
           </tr>
-        ))}
-      </tbody>
-    </Table>
+        </thead>
+        <tbody>
+          {lists.map((list: any, idx: number) => (
+            <tr key={idx}>
+              <BodyNo>
+                <BodyFont>
+                  <Link href={"/" + parseInt(list.no)}>{list.no}</Link>
+                </BodyFont>
+              </BodyNo>
+              <BodyName>
+                <BodyFont>{list.title}</BodyFont>
+              </BodyName>
+              <BodyNickName>
+                <BodyFont>{list.nickname}</BodyFont>
+              </BodyNickName>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+      <div>
+        <Button
+          onClick={() => {
+            window.location.href = "/create";
+          }}
+        >
+          글쓰기
+        </Button>
+      </div>
+    </div>
   );
 };
 
@@ -92,6 +103,11 @@ const BodyNickName = styled.td`
 const BodyFont = styled.p`
   color: black;
   font-size: 30px;
+`;
+
+const Button = styled.button`
+  width: 50px;
+  height: 30px;
 `;
 
 export default List;
