@@ -14,6 +14,8 @@ export default function App({ Component, pageProps }: AppProps) {
 const Layout = styled.div`
   width: 100vw;
   height: 100vh;
+  min-width: 500px;
+  min-height: 400px;
   display: flex;
   justify-content: center;
   align-items: center;
