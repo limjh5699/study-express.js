@@ -1,5 +1,7 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
+import routes from "./routes";
+
 import env from "dotenv";
 env.config();
 
@@ -12,6 +14,8 @@ app.use(
     credentials: true,
   })
 );
+
+app.use(routes);
 
 const PORT = process.env.PORT || 3001;
 
