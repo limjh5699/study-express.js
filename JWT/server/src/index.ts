@@ -15,10 +15,9 @@ app.use(
   })
 );
 
-app.use(routes);
-
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`${PORT} 번에서 서버가 작동하고 있습니다.`);
+  routes(app);
 });

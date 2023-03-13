@@ -1,14 +1,16 @@
 import Knex from "knex";
+import env from "dotenv";
+env.config();
 
 const knex = Knex({
   client: "mysql",
   connection: {
     timezone: "UTC",
-    host: "localhost",
-    port: 3308,
-    user: "root",
-    password: "1234",
-    database: "practice",
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT),
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
     pool: {
       min: 0,
       max: 10,
