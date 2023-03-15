@@ -6,3 +6,10 @@ export const hashingPassword = async (password: string) => {
   const hashedPassword = await bcrpyt.hash(password, salt);
   return hashedPassword;
 };
+
+export const comparePassword = async (
+  password: string,
+  hashedPassword: string
+) => {
+  return bcrpyt.compare(password, hashedPassword);
+};

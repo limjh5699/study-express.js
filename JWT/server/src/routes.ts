@@ -1,6 +1,7 @@
 import { Express, Request, Response } from "express";
-import { hashingPassword } from "./hasing";
+import { comparePassword, hashingPassword } from "./bycrypt";
 import knex from "./database";
+import { createAccessToken, createRefreshToken, verifyToken } from "./jwt";
 
 const routes = (app: Express) => {
   // 회원가입 라우터
@@ -34,6 +35,40 @@ const routes = (app: Express) => {
           res.status(401).send({ message: "중복된 사용자 입니다" });
         }
       });
+  });
+
+  // 로그인 라우터
+  app.post("/api/login", (req: Request, res: Response) => {
+    knex("jwt")
+      .select("password")
+      .where("email", req.body.email)
+      .then(async (data) => {
+        if (await comparePassword(req.body.password, data[0].password)) {
+          const accessToken = await createAccessToken({
+            type: "JWT",
+            email: req.body.email,
+          });
+          const refreshToken = await createRefreshToken({
+            type: "JWT",
+            email: req.body.email,
+          });
+
+          res.status(201).send({
+            code: 201,
+            message: "로그인했습니다.",
+            token: { accessToken: accessToken, refreshToken: refreshToken },
+          });
+        } else {
+          res
+            .status(401)
+            .send({ code: 401, message: "이메일 혹은 패스워드가 틀렸습니다." });
+        }
+      });
+  });
+
+  app.post("/api/test", async (req: Request, res: Response) => {
+    const text: string = "bcfga";
+    console.log(await hashingPassword(text));
   });
 };
 
