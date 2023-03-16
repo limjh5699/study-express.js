@@ -48,6 +48,7 @@ const routes = (app: Express) => {
             type: "JWT",
             email: req.body.email,
           });
+
           const refreshToken = await createRefreshToken({
             type: "JWT",
             email: req.body.email,
@@ -64,11 +65,6 @@ const routes = (app: Express) => {
             .send({ code: 401, message: "이메일 혹은 패스워드가 틀렸습니다." });
         }
       });
-  });
-
-  app.post("/api/test", async (req: Request, res: Response) => {
-    const text: string = "bcfga";
-    console.log(await hashingPassword(text));
   });
 };
 
