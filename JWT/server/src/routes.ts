@@ -45,14 +45,16 @@ const routes = (app: Express) => {
       .then(async (data) => {
         if (await comparePassword(req.body.password, data[0].password)) {
           const accessToken = await createAccessToken({
-            type: "JWT",
             email: req.body.email,
           });
 
           const refreshToken = await createRefreshToken({
-            type: "JWT",
             email: req.body.email,
           });
+
+          res.cookie("email", req.body.email);
+          res.cookie("accessToken", accessToken);
+          res.cookie("refreshToken", refreshToken);
 
           res.status(201).send({
             code: 201,
@@ -65,6 +67,46 @@ const routes = (app: Express) => {
             .send({ code: 401, message: "이메일 혹은 패스워드가 틀렸습니다." });
         }
       });
+  });
+
+  // 토큰 확인 라우터
+  app.post("/api/checkTokens", async (req: Request, res: Response) => {
+    if (req.cookies.accessToken === undefined) {
+      throw Error("API 사용 권한이 없습니다.");
+    }
+
+    let accessToken: any = await verifyToken(req.cookies.accessToken);
+    let refreshToken: any = await verifyToken(req.cookies.refreshToken);
+
+    if (accessToken === null) {
+      if (refreshToken === null) {
+        // Access Token X / Refresh Token X
+        res.status(401).send({ code: 401, message: "토큰이 만료되었습니다." });
+      } else {
+        // Access Token X / Refresh Token O
+        accessToken = await createAccessToken({
+          email: req.cookies.email,
+        });
+        res.cookie("accessToken", accessToken);
+        res
+          .status(201)
+          .send({ code: 201, message: "Access Token이 재발급 되었습니다." });
+      }
+    } else {
+      if (refreshToken === null) {
+        // Access Token O / Refresh Token X
+        refreshToken = await createRefreshToken({
+          email: req.cookies.email,
+        });
+        res.cookie("refreshToken", refreshToken);
+        res
+          .status(201)
+          .send({ code: 201, message: "Refresh Token이 재발급 되었습니다." });
+      } else {
+        // Access Token O / Refresh Token O
+        res.status(201).send({ code: 201, message: "만료된 토큰이 없습니다." });
+      }
+    }
   });
 };
 
