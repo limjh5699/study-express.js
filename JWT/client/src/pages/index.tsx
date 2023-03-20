@@ -1,10 +1,10 @@
-import Login from "@/components/main/login";
 import styled from "styled-components";
+import Home from "@/components/main/home";
 
 const Main = () => {
   return (
     <div>
-      <Login />
+      <Home />
     </div>
   );
 };

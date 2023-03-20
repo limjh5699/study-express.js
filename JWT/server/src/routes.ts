@@ -52,14 +52,13 @@ const routes = (app: Express) => {
             email: req.body.email,
           });
 
-          res.cookie("email", req.body.email);
           res.cookie("accessToken", accessToken);
           res.cookie("refreshToken", refreshToken);
 
           res.status(201).send({
             code: 201,
             message: "로그인했습니다.",
-            token: { accessToken: accessToken, refreshToken: refreshToken },
+            email: req.body.email,
           });
         } else {
           res
@@ -70,43 +69,66 @@ const routes = (app: Express) => {
   });
 
   // 토큰 확인 라우터
-  app.post("/api/checkTokens", async (req: Request, res: Response) => {
+  app.get("/api/checkTokens", async (req: Request, res: Response) => {
     if (req.cookies.accessToken === undefined) {
-      throw Error("API 사용 권한이 없습니다.");
-    }
-
-    let accessToken: any = await verifyToken(req.cookies.accessToken);
-    let refreshToken: any = await verifyToken(req.cookies.refreshToken);
-
-    if (accessToken === null) {
-      if (refreshToken === null) {
-        // Access Token X / Refresh Token X
-        res.status(401).send({ code: 401, message: "토큰이 만료되었습니다." });
-      } else {
-        // Access Token X / Refresh Token O
-        accessToken = await createAccessToken({
-          email: req.cookies.email,
-        });
-        res.cookie("accessToken", accessToken);
-        res
-          .status(201)
-          .send({ code: 201, message: "Access Token이 재발급 되었습니다." });
-      }
+      res.status(400).send({ code: 400, message: "API 사용 권한이 없습니다." });
     } else {
-      if (refreshToken === null) {
-        // Access Token O / Refresh Token X
-        refreshToken = await createRefreshToken({
-          email: req.cookies.email,
-        });
-        res.cookie("refreshToken", refreshToken);
-        res
-          .status(201)
-          .send({ code: 201, message: "Refresh Token이 재발급 되었습니다." });
+      let accessToken: any = await verifyToken(req.cookies.accessToken);
+      let refreshToken: any = await verifyToken(req.cookies.refreshToken);
+      let email: any;
+
+      if (accessToken !== null) {
+        email = accessToken.email;
+      } else if (refreshToken !== null) {
+        email = accessToken.email;
+      }
+
+      if (accessToken === null) {
+        if (refreshToken === null) {
+          // Access Token X / Refresh Token X
+          res
+            .status(401)
+            .send({ code: 401, message: "토큰이 만료되었습니다." });
+        } else {
+          // Access Token X / Refresh Token O
+          accessToken = await createAccessToken({
+            email: email,
+          });
+          res.cookie("accessToken", accessToken);
+          res.status(201).send({
+            code: 201,
+            message: "Access Token이 재발급 되었습니다.",
+            email: email,
+          });
+        }
       } else {
-        // Access Token O / Refresh Token O
-        res.status(201).send({ code: 201, message: "만료된 토큰이 없습니다." });
+        if (refreshToken === null) {
+          // Access Token O / Refresh Token X
+          refreshToken = await createRefreshToken({
+            email: email,
+          });
+          res.cookie("refreshToken", refreshToken);
+          res.status(201).send({
+            code: 201,
+            message: "Refresh Token이 재발급 되었습니다.",
+            email: email,
+          });
+        } else {
+          // Access Token O / Refresh Token O
+          res.status(200).send({
+            code: 200,
+            message: "만료된 토큰이 없습니다.",
+            email: email,
+          });
+        }
       }
     }
+  });
+
+  app.get("/api/logout", async (req: Request, res: Response) => {
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+    res.status(200).send({ code: 200, message: "로그아웃되었습니다." });
   });
 };
 

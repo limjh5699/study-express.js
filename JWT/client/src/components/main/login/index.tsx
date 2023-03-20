@@ -1,17 +1,58 @@
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
+import { useCookies } from "react-cookie";
 import styled from "styled-components";
 
 const Login = () => {
+  const router = useRouter();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const onClickHandler = () => {
+    fetch("http://localhost:3001/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password,
+      }),
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.code === 201) {
+          router.push("/");
+        } else if (data.code === 401) {
+          alert(data.message);
+        }
+      });
+  };
+
   return (
     <Group>
       <TextArea>
         <Title>JWT 연습</Title>
       </TextArea>
       <InputArea>
-        <Input type="text" placeholder="아이디를 입력하세요" />
-        <Input type="password" placeholder="비밀번호를 입력하세요" />
+        <Input
+          type="text"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="이메일을 입력하세요"
+        />
+        <Input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="비밀번호를 입력하세요"
+        />
       </InputArea>
       <ButtonArea>
-        <Button>로그인</Button>
+        <Button onClick={() => onClickHandler()}>로그인</Button>
       </ButtonArea>
     </Group>
   );
