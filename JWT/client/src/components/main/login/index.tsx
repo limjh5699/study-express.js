@@ -7,6 +7,8 @@ import styled from "styled-components";
 const Login = () => {
   const router = useRouter();
 
+  const [cookie, setCookie] = useCookies(["accessToken"]);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -31,6 +33,8 @@ const Login = () => {
         }
       });
   };
+
+  if (cookie.accessToken) router.push("/");
 
   return (
     <Group>

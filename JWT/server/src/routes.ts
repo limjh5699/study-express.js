@@ -77,9 +77,9 @@ const routes = (app: Express) => {
       let refreshToken: any = await verifyToken(req.cookies.refreshToken);
       let email: any;
 
-      if (accessToken !== null) {
-        email = accessToken.email;
-      } else if (refreshToken !== null) {
+      if (accessToken === null) {
+        email = refreshToken.email;
+      } else if (refreshToken === null) {
         email = accessToken.email;
       }
 
@@ -87,8 +87,8 @@ const routes = (app: Express) => {
         if (refreshToken === null) {
           // Access Token X / Refresh Token X
           res
-            .status(401)
-            .send({ code: 401, message: "토큰이 만료되었습니다." });
+            .status(400)
+            .send({ code: 400, message: "토큰이 만료되었습니다." });
         } else {
           // Access Token X / Refresh Token O
           accessToken = await createAccessToken({

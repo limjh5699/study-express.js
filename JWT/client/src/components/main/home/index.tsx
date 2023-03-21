@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { useCookies } from "react-cookie";
 import useSWR from "swr";
 
 const fetcher = (url: string | URL) => {
@@ -10,6 +11,14 @@ const fetcher = (url: string | URL) => {
 
 const Home = () => {
   const router = useRouter();
+
+  const [cookie, setCookie] = useCookies(["accessToken", "refreshToken"]);
+
+  useEffect(() => {
+    if (!cookie.accessToken) {
+      router.push("/login");
+    }
+  });
 
   const { data, error } = useSWR(
     "http://localhost:3001/api/checkTokens",
